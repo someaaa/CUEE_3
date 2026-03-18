@@ -1,7 +1,7 @@
 /******************** BLYNK CONFIG ********************/
-#define BLYNK_TEMPLATE_ID "xxx"
-#define BLYNK_TEMPLATE_NAME "Smart Office"
-#define BLYNK_AUTH_TOKEN "xxx"
+#define BLYNK_TEMPLATE_ID "TMPL6TEgwENGm"
+#define BLYNK_TEMPLATE_NAME "Smart Workspace"
+#define BLYNK_AUTH_TOKEN "ใส่tokenตรงนี้นะจ๊ะ"
 
 /******************** LIBRARY ********************/
 #include <WiFi.h>
@@ -10,8 +10,8 @@
 #include <LiquidCrystal_I2C.h>
 
 /******************** WIFI ********************/
-char ssid[] = "your_wifi";
-char pass[] = "your_pass";
+char ssid[] = "Redmi";
+char pass[] = "asdfghjkl";
 
 /******************** PIN CONFIG (ESP32) ********************/
 #define TRIG_EYE 5
