@@ -1,0 +1,177 @@
+#define BLYNK_TEMPLATE_ID "xxx"
+#define BLYNK_TEMPLATE_NAME "Smart Office"
+#define BLYNK_AUTH_TOKEN "xxx"
+
+#include <WiFi.h>
+#include <BlynkSimpleEsp32.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+// WiFi Configuration
+char ssid[] = "your_wifi";
+char pass[] = "your_pass";
+
+// PIN CONFIG (ESP32)
+#define TRIG_EYE 5
+#define ECHO_EYE 18
+#define TRIG_BACK_UP 12
+#define ECHO_BACK_UP 14
+#define TRIG_BACK_LOW 25
+#define ECHO_BACK_LOW 26
+#define PIN_LIGHT 34 
+#define BUZZER 13
+#define LED_SYS 2
+#define LED_ALERT_2 4
+#define LED_ALERT_3 15
+#define BTN 27
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+// SYSTEM VARIABLES
+bool systemActive = false;
+bool isSitting = false;
+unsigned long sessionStart = 0;
+unsigned long totalWorkAccumulated = 0;
+unsigned long lastSend = 0;
+
+unsigned long closeStart = 0;
+unsigned long closeTotal = 0;
+bool isClose = false;
+
+unsigned long hunchStart = 0;
+unsigned long hunchCount = 0;
+bool isHunch = false;
+
+// THRESHOLD CONFIG
+#define CLOSE_THRESHOLD 40
+#define CLOSE_DELAY 3000
+#define HUNCH_DIFF 15
+#define LIGHT_THRESHOLD 500
+#define WORK_LIMIT 3600000 // 60 mins
+
+float getDistance(int trig, int echo) {
+  digitalWrite(trig, LOW); delayMicroseconds(2);
+  digitalWrite(trig, HIGH); delayMicroseconds(10);
+  digitalWrite(trig, LOW);
+  long duration = pulseIn(echo, HIGH, 25000); 
+  if (duration == 0) return 400;
+  return duration * 0.034 / 2;
+}
+
+void showLCD(String line1, String line2) {
+  lcd.clear();
+  lcd.setCursor(0, 0); lcd.print(line1);
+  lcd.setCursor(0, 1); lcd.print(line2);
+}
+
+void setup() {
+  Serial.begin(115200);
+  lcd.init(); lcd.backlight();
+  
+  pinMode(TRIG_EYE, OUTPUT); pinMode(ECHO_EYE, INPUT);
+  pinMode(TRIG_BACK_UP, OUTPUT); pinMode(ECHO_BACK_UP, INPUT);
+  pinMode(TRIG_BACK_LOW, OUTPUT); pinMode(ECHO_BACK_LOW, INPUT);
+  pinMode(BUZZER, OUTPUT); pinMode(LED_SYS, OUTPUT);
+  pinMode(LED_ALERT_2, OUTPUT); pinMode(LED_ALERT_3, OUTPUT);
+  pinMode(BTN, INPUT_PULLUP);
+
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+}
+
+void loop() {
+  Blynk.run();
+
+  // 5. BUTTON TOGGLE SYSTEM
+  static bool lastBtn = HIGH;
+  bool nowBtn = digitalRead(BTN);
+  if (lastBtn == HIGH && nowBtn == LOW) {
+    systemActive = !systemActive;
+    digitalWrite(LED_SYS, systemActive);
+    if (systemActive) {
+      showLCD("System: ON", "Monitoring...");
+    } else {
+      showLCD("System: OFF", "Good Bye!");
+      digitalWrite(LED_ALERT_2, LOW); digitalWrite(LED_ALERT_3, LOW);
+      digitalWrite(BUZZER, LOW);
+    }
+    delay(250); // Debounce
+  }
+  lastBtn = nowBtn;
+
+  if (!systemActive) return;
+
+  // -------- READ SENSORS (With Delay to Prevent Cross-talk) --------
+  float eyeDist = getDistance(TRIG_EYE, ECHO_EYE);
+  delay(50); // รอให้คลื่นเสียงตัวแรกจางลงก่อน
+  
+  float backUp = getDistance(TRIG_BACK_UP, ECHO_BACK_UP);
+  delay(50); // รอให้คลื่นเสียงตัวที่สองจางลง
+  
+  float backLow = getDistance(TRIG_BACK_LOW, ECHO_BACK_LOW);
+  // -----------------------------------------------------------------
+
+  int lightRaw = analogRead(PIN_LIGHT);
+  float lux = (lightRaw / 4095.0) * 3.3 * 1000;
+
+  // 1. FACE TOO CLOSE MONITORING
+  if (eyeDist < CLOSE_THRESHOLD && eyeDist > 2) {
+    if (!isClose) { closeStart = millis(); isClose = true; }
+    if (millis() - closeStart > CLOSE_DELAY) {
+      digitalWrite(BUZZER, HIGH); digitalWrite(LED_ALERT_2, HIGH);
+      showLCD("Warning!", "Too Close Screen");
+    }
+  } else {
+    if (isClose) { closeTotal += (millis() - closeStart); }
+    isClose = false;
+    // หากไม่มีการเตือนเรื่องหลังงออยู่ ก็ปิดไฟและบัซเซอร์
+    if (!isHunch) { digitalWrite(LED_ALERT_2, LOW); digitalWrite(BUZZER, LOW); }
+  }
+
+  // 2 & 4. POSTURE & WORK TIMER (Using backLow as person detector)
+  if (backLow < 50) { 
+    if (!isSitting) { sessionStart = millis(); isSitting = true; }
+
+    // Check Hunchback (หลังงอ)
+    if (backUp - backLow > HUNCH_DIFF) {
+      if (!isHunch) { hunchStart = millis(); isHunch = true; }
+      if (millis() - hunchStart > 5000) { 
+        hunchCount++;
+        digitalWrite(BUZZER, HIGH); digitalWrite(LED_ALERT_2, HIGH);
+        showLCD("Fix Posture!", "Don't Slouch");
+        isHunch = false; // Reset เพื่อเริ่มนับรอบใหม่
+      }
+    } else { 
+      isHunch = false; 
+    }
+
+    // Work Break Timer (60 mins)
+    if (millis() - sessionStart > WORK_LIMIT) {
+      showLCD("Break Time!", "Please Stand Up");
+      digitalWrite(BUZZER, HIGH);
+    }
+  } else { 
+    if (isSitting) {
+      totalWorkAccumulated += (millis() - sessionStart);
+      isSitting = false;
+      digitalWrite(BUZZER, LOW);
+    }
+  }
+
+  // 3. LIGHT CHECK
+  if (lux < LIGHT_THRESHOLD) {
+    digitalWrite(LED_ALERT_3, HIGH);
+  } else {
+    digitalWrite(LED_ALERT_3, LOW);
+  }
+
+  // BLYNK UPDATE (Every 5 Sec)
+  if (millis() - lastSend > 5000) {
+    lastSend = millis();
+    unsigned long currentTotalWork = totalWorkAccumulated + (isSitting ? (millis() - sessionStart) : 0);
+    unsigned long currentCloseTotal = closeTotal + (isClose ? (millis() - closeStart) : 0);
+
+    Blynk.virtualWrite(V0, currentTotalWork / 60000); 
+    Blynk.virtualWrite(V1, currentCloseTotal / 60000);
+    Blynk.virtualWrite(V2, hunchCount);
+  }
+}
