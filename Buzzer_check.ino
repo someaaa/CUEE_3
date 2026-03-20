@@ -5,9 +5,12 @@ void setup() {
 }
 
 void loop() {
-  digitalWrite(BUZZER_PIN, HIGH); // ติด
-  delay(1000);
-
-  digitalWrite(BUZZER_PIN, LOW);  // ดับ
-  delay(1000);
+  for(int i = 0; i < 3; i++) {
+    digitalWrite(BUZZER_PIN, HIGH);
+    delay(100);
+    digitalWrite(BUZZER_PIN, LOW);
+    delay(100);
+  }
+  
+  delay(2000); // เว้นก่อนรอบใหม่
 }
