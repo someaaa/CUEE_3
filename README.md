@@ -31,5 +31,7 @@ Cumulative Time: ระบบจะจำเวลาสะสมไว้ด้
 Data ที่ส่งไป blynk น่าจะนำมา polt กราฟได้ และมีระบบreportต่างๆ ดังรูป
 <img width="987" height="626" alt="image" src="https://github.com/user-attachments/assets/781594c2-f9a0-460c-8094-5c832a33e1be" />
 
-<img width="1920" height="1080" alt="CUEE Camp Project Presentation" src="https://github.com/user-attachments/assets/67c02ec9-959a-47e5-9013-bcdaad8c7a0f" />
+<img width="887" height="496" alt="image" src="https://github.com/user-attachments/assets/2ced52cb-0215-4ba6-b3b1-0dc10bbcabcd" />
+
+<img width="885" height="492" alt="image" src="https://github.com/user-attachments/assets/d9dac76c-09b1-445a-8145-04b66a211fa2" />
 
