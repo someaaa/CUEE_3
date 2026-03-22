@@ -30,6 +30,8 @@ Cumulative Time: ระบบจะจำเวลาสะสมไว้ด้
 
 Data
 
+https://cad.onshape.com/documents/c8f79d7ed01564a4cec14bf9/w/396719e0328e4afdfa772147/e/2ed5f0de6a59f7741a7d899d
+
 <img width="968" height="547" alt="image" src="https://github.com/user-attachments/assets/42921296-61e8-4e4c-b07b-d424fdc67a0b" />
 
 <img width="1047" height="577" alt="image" src="https://github.com/user-attachments/assets/f8efc02f-da89-4fd4-83ec-0966862663e1" />
