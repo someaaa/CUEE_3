@@ -28,8 +28,8 @@ Cumulative Time: ระบบจะจำเวลาสะสมไว้ด้
 3. เวลา → ยาว
 4. แสง → ไม่มีเสียง
 
-Data ที่ส่งไป blynk น่าจะนำมา polt กราฟได้ และมีระบบreportต่างๆ ดังรูป
-<img width="987" height="626" alt="image" src="https://github.com/user-attachments/assets/781594c2-f9a0-460c-8094-5c832a33e1be" />
+Data
+<img width="968" height="547" alt="image" src="https://github.com/user-attachments/assets/42921296-61e8-4e4c-b07b-d424fdc67a0b" />
 
 <img width="887" height="496" alt="image" src="https://github.com/user-attachments/assets/2ced52cb-0215-4ba6-b3b1-0dc10bbcabcd" />
 
