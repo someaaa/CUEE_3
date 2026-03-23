@@ -88,7 +88,9 @@
 **v รายละเอียดเพิ่มเติม v**
 
 https://www.canva.com/design/DAHEXT_p398/ee_kmW8PMvK5iHlWvznw_Q/edit
+
 https://www.notion.so/CUEE-camp-3rd-Project-32446d96d54180bd9ff4f5083bba8f63
+
 https://cad.onshape.com/documents/c8f79d7ed01564a4cec14bf9/w/396719e0328e4afdfa772147/e/2ed5f0de6a59f7741a7d899d
 
 <img width="968" height="547" alt="image" src="https://github.com/user-attachments/assets/42921296-61e8-4e4c-b07b-d424fdc67a0b" />
