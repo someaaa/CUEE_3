@@ -1,5 +1,6 @@
 /***************************************************
- * TEMT6000 Light Sensor Test Code (ESP32)
+ * TEMT6000 Light Sensor Test (ESP32)
+ * มาตรฐานการคำนวณ: 2 uA = 1 lux
  * Pin: GPIO 34 (Analog)
  ***************************************************/
 
@@ -8,26 +9,26 @@
 void setup() {
   Serial.begin(115200);
   pinMode(LIGHT_SENSOR_PIN, INPUT);
-  Serial.println("TEMT6000 Test Starting...");
+  Serial.println("--- TEMT6000 Lux Test (2uA = 1lx) ---");
 }
 
 void loop() {
-  // 1. อ่านค่า Raw จาก ADC (0 - 4095)
+  // 1. อ่านค่า Raw จาก ADC (0 - 4095 สำหรับ ESP32)
   int rawValue = analogRead(LIGHT_SENSOR_PIN);
 
   // 2. แปลงค่าเป็นแรงดันไฟฟ้า (Voltage)
+  // ESP32 ADC ทำงานที่ 3.3V
   float voltage = (rawValue / 4095.0) * 3.3;
 
-  // 3. คำนวณค่า Lux ตาม Datasheet
-  // สมมติใช้ Load Resistor (RL) บนโมดูลขนาด 10k Ohm (10,000 Ohm)
-  // กระแส I = V / R
-  float amps = voltage / 10000.0;     // หน่วยเป็น Amps
-  float microAmps = amps * 1000000.0; // แปลงเป็น Microamps (uA)
+  // 3. คำนวณกระแส (Current) ในหน่วย Microamps (uA)
+  // สูตร: I = V / R โดยที่ R บนโมดูลส่วนใหญ่คือ 10,000 Ohm (10k)
+  float microAmps = (voltage / 10000.0) * 1000000.0;
   
-  // จาก Datasheet: 10uA ≈ 20 lux (ดังนั้น 1uA ≈ 2 lux)
-  float lux = microAmps * 2.0;
+  // 4. แปลง uA เป็น Lux ตามมาตรฐาน 2 uA = 1 lux
+  // ดังนั้น Lux = uA / 2.0 (หรือ uA * 0.5)
+  float lux = microAmps / 2.0;
 
-  // แสดงผลผ่าน Serial Monitor
+  // แสดงผลออกทาง Serial Monitor
   Serial.print("Raw: ");
   Serial.print(rawValue);
   Serial.print(" | Voltage: ");
