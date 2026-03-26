@@ -1,5 +1,3 @@
-//Credit: made by me and xin
-
 /******************** ENUM ********************/
 enum BeepType { BT_NONE, BT_EYE, BT_HUNCH, BT_WORK };
 
