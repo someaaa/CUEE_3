@@ -210,12 +210,11 @@ void loop() {
 
   float eyeDist  = getDistance(TRIG_EYE, ECHO_EYE);
   
-  // --- ส่วนแก้ไข TEMT6000 ---
+  /********TEMT6000********/
   int lightRaw = analogRead(PIN_LIGHT);
   float voltage = (lightRaw / 4095.0) * 3.3; 
   float microAmps = (voltage / 10000.0) * 1000000.0; 
   float lux = microAmps * 0.5; // อิงตาม 2uA = 1 lux
-  // -------------------------
 
   /******** EYE ********/
   if (eyeDist > 2 && eyeDist < CLOSE_THRESHOLD) {
