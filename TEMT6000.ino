@@ -4,6 +4,8 @@
  * https://devices.esphome.io/devices/temt6000/
  * https://github.com/CraftzAdmin/esp32/blob/main/Sensors/TEMT6000/README.md
  * Pin: GPIO 34 (Analog)
+ * ถ้าจะหา Lux: Lux = Current * 2 (โค้ดเลยใช้การคูณ)
+ * ถ้าจะหา Current: Current = Lux / 2 (ถึงจะย้าย 2 ไปหาร)
  ***************************************************/
 
 #define LIGHT_SENSOR_PIN 34
